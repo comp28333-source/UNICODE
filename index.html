@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNICODE</title>
+    <style>
+        :root {
+            --bg-color: #1e2024;
+            --card-bg: #25282e;
+            --shadow-light: #2e323a;
+            --shadow-dark: #16181b;
+            --accent: #4dabf7;
+            --accent-hover: #339af0;
+            --success: #51cf66;
+            --text-main: #e9ecef;
+            --text-muted: #adb5bd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px;
+            width: 100%;
+            max-width: 680px;
+            box-shadow: 10px 10px 22px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            text-align: center;
+            margin-bottom: 22px;
+            color: var(--text-main);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .section {
+            margin-bottom: 22px;
+            padding: 16px;
+            border-radius: 14px;
+            background-color: var(--bg-color);
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .time-inputs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        input[type="number"], input[type="text"] {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            color: var(--text-main);
+            padding: 10px 14px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"] {
+            width: 85px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        .colon {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
+        .result-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+        }
+
+        .result-text {
+            font-size: 1.4rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            word-break: break-all;
+            user-select: all;
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: #111;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn.copied {
+            background-color: var(--success);
+            color: #111;
+        }
+
+        .quick-chars {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .char-btn {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -2px -2px 5px var(--shadow-light);
+            transition: 0.15s;
+        }
+
+        .char-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .char-btn:active {
+            box-shadow: inset 2px 2px 4px var(--shadow-dark);
+        }
+
+        /* Секция смайлов */
+        .emoji-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .tab-btn {
+            background-color: var(--card-bg);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 2px 2px 5px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            border-color: rgba(77, 171, 247, 0.4);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: #111;
+            font-weight: 600;
+            border-color: var(--accent);
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 6px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--card-bg);
+        }
+
+        .emoji-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .emoji-grid::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: 4px;
+        }
+
+        .emoji-grid::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .emoji-btn {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            height: 40px;
+            font-size: 1.35rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, border-color 0.15s, background-color 0.15s;
+            user-select: none;
+        }
+
+        .emoji-btn:hover {
+            border-color: var(--accent);
+            transform: scale(1.1);
+            z-index: 2;
+        }
+
+        .emoji-btn:active {
+            transform: scale(0.95);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background-color: var(--success);
+            color: #111;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s;
+            z-index: 10000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .watermark {
+            position: fixed;
+            bottom: 12px;
+            right: 16px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.22);
+            pointer-events: none;
+            user-select: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>UNICODE</h1>
+
+    <!-- Блок времени -->
+    <div class="section">
+        <div class="section-title">1. Формат времени для мессенджеров</div>
+        <div class="time-inputs">
+            <input type="number" id="hours" min="0" max="23" value="12" placeholder="ЧЧ">
+            <span class="colon">:</span>
+            <input type="number" id="minutes" min="0" max="59" value="00" placeholder="ММ">
+        </div>
+        <div class="result-box">
+            <span class="result-text" id="timeResult">12⁰⁰</span>
+            <button class="btn" id="copyTimeBtn" onclick="copyText('timeResult', 'copyTimeBtn')">Копировать</button>
+        </div>
+    </div>
+
+    <!-- Блок произвольного числа -->
+    <div class="section">
+        <div class="section-title">2. Любые цифры в верхний индекс</div>
+        <input type="text" id="customInput" placeholder="Введите цифры (напр. 00 или 15)" value="00" style="margin-bottom: 12px;">
+        <div class="result-box">
+            <span class="result-text" id="customResult">⁰⁰</span>
+            <button class="btn" id="copyCustomBtn" onclick="copyText('customResult', 'copyCustomBtn')">Копировать</button>
+        </div>
+    </div>
+
+    <!-- Быстрое копирование отдельных символов -->
+    <div class="section">
+        <div class="section-title" style="text-align: center;">3. Цифры верхнего индекса (нажмите для копирования)</div>
+        <div class="quick-chars" id="quickChars"></div>
+    </div>
+
+    <!-- Полный набор смайлов Unicode -->
+    <div class="section" style="margin-bottom: 0;">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>4. Весь набор смайлов Unicode</span>
+            <span id="emojiCount" style="font-size: 0.75rem; color: var(--accent);"></span>
+        </div>
+        <div class="emoji-tabs" id="emojiTabs"></div>
+        <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast">Скопировано!</div>
+<div class="watermark">БЛiК</div>
+
+<script>
+    const superMap = {
+        '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+        '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+        '+': '⁺', '-': '⁻', '=': '⁼', '(': '⁽', ')': '⁾'
+    };
+
+    function toSuperscript(str) {
+        return str.split('').map(ch => superMap[ch] || ch).join('');
+    }
+
+    const hoursInput = document.getElementById('hours');
+    const minutesInput = document.getElementById('minutes');
+    const timeResult = document.getElementById('timeResult');
+
+    function updateTime() {
+        let h = hoursInput.value.toString();
+        let m = minutesInput.value.toString();
+
+        if (m.length === 1) {
+            m = '0' + m;
+        } else if (m.length === 0) {
+            m = '00';
+        }
+
+        timeResult.textContent = h + toSuperscript(m);
+    }
+
+    hoursInput.addEventListener('input', updateTime);
+    minutesInput.addEventListener('input', updateTime);
+
+    const customInput = document.getElementById('customInput');
+    const customResult = document.getElementById('customResult');
+
+    customInput.addEventListener('input', () => {
+        customResult.textContent = toSuperscript(customInput.value) || '—';
+    });
+
+    // Всплывающее уведомление
+    let toastTimer;
+    function showToast(char) {
+        const toast = document.getElementById('toast');
+        toast.textContent = `Скопировано: ${char}`;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 1100);
+    }
+
+    // Кнопки отдельных символов
+    const quickCharsContainer = document.getElementById('quickChars');
+    const digits = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+    digits.forEach(d => {
+        const btn = document.createElement('button');
+        btn.className = 'char-btn';
+        btn.textContent = d;
+        btn.title = 'Скопировать ' + d;
+        btn.onclick = () => {
+            navigator.clipboard.writeText(d);
+            showToast(d);
+            btn.style.borderColor = '#51cf66';
+            btn.style.color = '#51cf66';
+            setTimeout(() => {
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            }, 600);
+        };
+        quickCharsContainer.appendChild(btn);
+    });
+
+    function copyText(elementId, btnId) {
+        const text = document.getElementById(elementId).textContent;
+        const btn = document.getElementById(btnId);
+        navigator.clipboard.writeText(text).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = 'Скопировано!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = orig;
+                btn.classList.remove('copied');
+            }, 1200);
+        });
+    }
+
+    // Генерация всех стандартных блоков смайлов Unicode по диапазонам
+    function getCharsFromRanges(ranges) {
+        const chars = [];
+        for (const [start, end] of ranges) {
+            for (let cp = start; cp <= end; cp++) {
+                // Исключаем неиспользуемые/неотображаемые кодовые точки в стандартных диапазонах
+                if (
+                    (cp >= 0x1F6D3 && cp <= 0x1F6D4) ||
+                    (cp >= 0x1F6D8 && cp <= 0x1F6DB) ||
+                    (cp >= 0x1F6ED && cp <= 0x1F6EF) ||
+                    (cp >= 0x1F6FD && cp <= 0x1F6FF) ||
+                    (cp >= 0x1F900 && cp <= 0x1F90B) ||
+                    (cp >= 0x1F977 && cp <= 0x1F978) ||
+                    (cp === 0x1F9CC) ||
+                    (cp >= 0x1FA7D && cp <= 0x1FA7F) ||
+                    (cp >= 0x1FA89 && cp <= 0x1FA8F) ||
+                    (cp >= 0x1FABE && cp <= 0x1FABF) ||
+                    (cp >= 0x1FAC6 && cp <= 0x1FACD) ||
+                    (cp >= 0x1FADC && cp <= 0x1FADF) ||
+                    (cp >= 0x1FAEA && cp <= 0x1FAEF) ||
+                    (cp >= 0x1FAF9 && cp <= 0x1FAFF)
+                ) continue;
+                chars.push(String.fromCodePoint(cp));
+            }
+        }
+        return chars;
+    }
+
+    const emojiCategories = [
+        {
+            name: '😀 Эмоции',
+            ranges: [[0x1F600, 0x1F64F], [0x1F910, 0x1F92F], [0x1F970, 0x1F97A], [0x1FAE0, 0x1FAE8]]
+        },
+        {
+            name: '👋 Жесты и люди',
+            ranges: [[0x1F440, 0x1F487], [0x1F574, 0x1F57A], [0x1F590, 0x1F596], [0x1F645, 0x1F64F], [0x1F90C, 0x1F90F], [0x1F930, 0x1F93E], [0x1F9B0, 0x1F9BF], [0x1F9D1, 0x1F9DD], [0x1FAC0, 0x1FAC5], [0x1FAF0, 0x1FAF8]]
+        },
+        {
+            name: '❤️ Сердца и символы',
+            ranges: [[0x1F48B, 0x1F4A9], [0x1F4AB, 0x1F4AF], [0x1F5A4, 0x1F5A4], [0x1F90D, 0x1F90E], [0x1FA75, 0x1FA77], [0x2763, 0x2764], [0x2728, 0x2728], [0x2B50, 0x2B50], [0x1F525, 0x1F525]]
+        },
+        {
+            name: '🐶 Животные и природа',
+            ranges: [[0x1F400, 0x1F43F], [0x1F980, 0x1F9AE], [0x1FAB0, 0x1FABD], [0x1F330, 0x1F344], [0x1F300, 0x1F32C]]
+        },
+        {
+            name: '🍔 Еда и напитки',
+            ranges: [[0x1F345, 0x1F37F], [0x1F950, 0x1F96F], [0x1F9C0, 0x1F9CB], [0x1FAD0, 0x1FADB]]
+        },
+        {
+            name: '⚽ Спорт и активности',
+            ranges: [[0x1F380, 0x1F3C4], [0x1F3C6, 0x1F3CA], [0x1F3CF, 0x1F3D3], [0x1F3E0, 0x1F3F0], [0x1F93A, 0x1F94F], [0x1FA80, 0x1FA88]]
+        },
+        {
+            name: '🚗 Транспорт и места',
+            ranges: [[0x1F680, 0x1F6C5], [0x1F6CB, 0x1F6D2], [0x1F6D5, 0x1F6D7], [0x1F6E0, 0x1F6EC], [0x1F6F0, 0x1F6FC]]
+        },
+        {
+            name: '💡 Предметы и техника',
+            ranges: [[0x1F4B0, 0x1F53D], [0x1F550, 0x1F567], [0x1F570, 0x1F573], [0x1F58A, 0x1F58D], [0x1F5A5, 0x1F5B2], [0x1F5C2, 0x1F5D3], [0x1F5DC, 0x1F5E3], [0x1F5E8, 0x1F5EF], [0x1F5F3, 0x1F5FA], [0x1F9EA, 0x1F9FF], [0x1FA70, 0x1FA74], [0x1FA78, 0x1FA7C], [0x1FA90, 0x1FAAC]]
+        },
+        {
+            name: '⚠️ Знаки и пиктограммы',
+            ranges: [[0x2600, 0x26FF], [0x2700, 0x27BF], [0x1F170, 0x1F19A], [0x1F201, 0x1F251]]
+        }
+    ];
+
+    // Формируем категорию "Все" из уникальных символов
+    const allEmojisSet = new Set();
+    emojiCategories.forEach(cat => {
+        cat.chars = getCharsFromRanges(cat.ranges);
+        cat.chars.forEach(c => allEmojisSet.add(c));
+    });
+
+    const fullCategories = [
+        { name: '🌐 Все', chars: Array.from(allEmojisSet) },
+        ...emojiCategories
+    ];
+
+    const emojiTabs = document.getElementById('emojiTabs');
+    const emojiGrid = document.getElementById('emojiGrid');
+    const emojiCount = document.getElementById('emojiCount');
+
+    function renderEmojis(chars) {
+        emojiGrid.innerHTML = '';
+        emojiCount.textContent = `${chars.length} шт.`;
+        const fragment = document.createDocumentFragment();
+        chars.forEach(emoji => {
+            const btn = document.createElement('button');
+            btn.className = 'emoji-btn';
+            btn.textContent = emoji;
+            btn.title = 'Нажмите, чтобы скопировать';
+            btn.onclick = () => {
+                navigator.clipboard.writeText(emoji);
+                showToast(emoji);
+                btn.style.borderColor = '#51cf66';
+                setTimeout(() => {
+                    btn.style.borderColor = '';
+                }, 500);
+            };
+            fragment.appendChild(btn);
+        });
+        emojiGrid.appendChild(fragment);
+    }
+
+    fullCategories.forEach((cat, idx) => {
+        const tab = document.createElement('button');
+        tab.className = 'tab-btn' + (idx === 1 ? ' active' : ''); // По умолчанию открываем "Эмоции" для быстрой загрузки, но "Все" доступно в один клик
+        tab.textContent = cat.name;
+        tab.onclick = () => {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            renderEmojis(cat.chars);
+        };
+        emojiTabs.appendChild(tab);
+    });
+
+    // Изначально рендерим категорию "Эмоции"
+    renderEmojis(fullCategories[1].chars);
+    updateTime();
+</script>
+
+</body>
+</html>
