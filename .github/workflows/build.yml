@@ -1,1 +1,59 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Cordova globally
+        run: npm install -g cordova
+
+      - name: Create Cordova project and disable splash
+        run: |
+          cordova create my-app com.unocode.app Moe Menu
+          cd my-app
+          cordova platform add android
+          cp ../index.html www/index.html
+
+          mkdir -p res/screen/android
+          node -e '
+            const fs = require("fs");
+            const png1x1Transparent = Buffer.from(
+              "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=",
+              "base64"
+            );
+            fs.writeFileSync("res/screen/android/transparent.png", png1x1Transparent);
+          '
+
+          if [ -f "../icon.png" ]; then
+            cp ../icon.png icon.png
+            sed -i '/<\/widget>/i \    <icon src="icon.png" />' config.xml
+          fi
+
+          sed -i '/<\/widget>/i \    <preference name="SplashScreenDelay" value="0" />' config.xml
+          sed -i '/<\/widget>/i \    <platform name="android"><preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/transparent.png" /><preference name="AndroidWindowSplashScreenBackground" value="#ffffff" /></platform>' config.xml
+
+          cordova build android
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unicode-apk
+          path: my-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
 
