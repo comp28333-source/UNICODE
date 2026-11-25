@@ -27,20 +27,18 @@ jobs:
 
       - name: Create Cordova project and disable splash
         run: |
-          cordova create my-app com.unocode.app Moe Menu
+          cordova create my-app com.unocode.app UNICODE
           cd my-app
           cordova platform add android
           cp ../index.html www/index.html
 
           mkdir -p res/screen/android
-          node -e '
-            const fs = require("fs");
-            const png1x1Transparent = Buffer.from(
-              "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=",
-              "base64"
-            );
-            fs.writeFileSync("res/screen/android/transparent.png", png1x1Transparent);
-          '
+          if [ -f "../transparent.png" ]; then
+            cp ../transparent.png res/screen/android/transparent.png
+          else
+            echo "Error: transparent.png not found in repository root"
+            exit 1
+          fi
 
           if [ -f "../icon.png" ]; then
             cp ../icon.png icon.png
@@ -56,4 +54,3 @@ jobs:
         with:
           name: unicode-apk
           path: my-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
-
